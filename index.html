@@ -115,6 +115,36 @@
             border: 0;
             border-top: 1px solid #ccc;
         }
+
+        .rating-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .rating-section .user-rating {
+            width: 20%;
+            min-width: 120px;
+        }
+
+        .user-rating input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .user-rating select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -126,6 +156,21 @@
             <h2>Enter Existing Points</h2>
             <textarea id="existing-points" placeholder="Enter existing points with sprint number (e.g., 🏆 Points after Sprint - 3🏆)"></textarea>
             <button onclick="calculatePoints()">Add Rating</button>
+        </div>
+
+        <!-- Rating Input Section -->
+        <div class="input-container">
+            <h2>Enter Ratings</h2>
+            <select id="user-select" onchange="updateRatingFields()">
+                <option value="">Select User</option>
+                <option value="Ashish">Ashish</option>
+                <option value="Sathyan">Sathyan</option>
+                <option value="Prashanth">Prashanth</option>
+                <option value="Pradeep">Pradeep</option>
+                <option value="Shubh">Shubh</option>
+                <option value="Shirish">Shirish</option>
+            </select>
+            <div class="rating-section" id="rating-fields"></div>
         </div>
 
         <!-- Output Section -->
@@ -178,59 +223,80 @@
             { user: "Shirish", Ashish: 0, Sathyan: 0, Prashanth: 0, Pradeep: 0, Shubh: 0, average: 0 }
         ];
 
+        function updateRatingFields() {
+            const user = document.getElementById("user-select").value;
+            const ratingFields = document.getElementById("rating-fields");
+            ratingFields.innerHTML = ''; // Clear the existing fields
+
+            if (user) {
+                const otherUsers = Object.keys(points).filter(u => u !== user);
+                otherUsers.forEach(userName => {
+                    const ratingField = document.createElement("div");
+                    ratingField.classList.add("user-rating");
+
+                    const label = document.createElement("label");
+                    label.textContent = `Rating from ${userName}:`;
+                    ratingField.appendChild(label);
+
+                    const input = document.createElement("input");
+                    input.type = "number";
+                    input.placeholder = "Rating (Optional)";
+                    input.id = `rating-${user}-${userName}`;
+                    ratingField.appendChild(input);
+
+                    ratingFields.appendChild(ratingField);
+                });
+            }
+        }
+
         function calculatePoints() {
             const existingPointsInput = document.getElementById("existing-points").value.trim();
             let sprintNumber = 0;
 
             // Extract sprint number from input
-            const sprintMatch = existingPointsInput.match(/🏆 Points after Sprint\s*-\s*(\d+)🏆/);
+            const sprintMatch = existingPointsInput.match(/🏆 Points after Sprint\s*-\s*(\d+)/);
             if (sprintMatch) {
-                sprintNumber = parseInt(sprintMatch[1], 10) + 1;
-            } else {
-                alert("Invalid input format for existing points. Please include '🏆 Points after Sprint - X 🏆'.");
-                return;
+                sprintNumber = parseInt(sprintMatch[1], 10);
             }
 
-            const pointsLines = existingPointsInput.split("\n").slice(1); // Ignore the first line with the sprint number
-            pointsLines.forEach(line => {
-                const match = line.match(/👤\s+(\w+)\s*:\s*(\d+\.\d+)/);
-                if (match) {
-                    const name = match[1];
-                    const score = parseFloat(match[2]);
-                    if (name in points) points[name] = score;
+            const userRatings = [];
+            const user = document.getElementById("user-select").value;
+
+            // Collect ratings from fields
+            const otherUsers = Object.keys(points).filter(u => u !== user);
+            otherUsers.forEach(userName => {
+                const ratingValue = document.getElementById(`rating-${user}-${userName}`).value.trim();
+                if (ratingValue) {
+                    userRatings.push({ user: userName, rating: parseInt(ratingValue, 10) });
                 }
             });
 
-            let detailsOutput = "Details of Rating\n━━━━━━━━━━━━━━\n";
-            let pointsOutput = `🏆 Points after Sprint - ${sprintNumber}🏆\n━━━━━━━━━━━━━━\n`;
+            // Update ratings in table
+            const tableBody = document.getElementById("rating-table-body");
+            tableBody.innerHTML = ''; // Clear existing table rows
+            userRatings.forEach(({ user, rating }) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${user}</td><td>${rating}</td>`;
+                tableBody.appendChild(row);
+            });
 
-            for (const user of Object.keys(points)) {
-                const userRatings = ratings.find(r => r.user === user);
-                if (userRatings) {
-                    const otherUsers = Object.keys(points).filter(u => u !== user);
-                    const validRatings = otherUsers.map(u => userRatings[u] > 0 ? userRatings[u].toFixed(2) : 'Skipped');
-                    const avg = userRatings.average.toFixed(2);
-                    const total = (points[user] + parseFloat(avg)).toFixed(2);
+            // Calculate average rating
+            const totalRating = userRatings.reduce((total, { rating }) => total + rating, 0);
+            const averageRating = totalRating / userRatings.length;
 
-                    detailsOutput += `👤 ${user}: (${validRatings.join(" + ")}) = ${avg} + Existing (${points[user].toFixed(2)}) = ${total}\n`;
-                    pointsOutput += `👤 ${user}: ${total}\n`;
-                } else {
-                    pointsOutput += `👤 ${user}: ${points[user].toFixed(2)}\n`;
-                }
-            }
+            // Update points based on average
+            points[user] = averageRating + sprintNumber;
 
-            detailsOutput += "━━━━━━━━━━━━━━";
-            pointsOutput += "━━━━━━━━━━━━━━";
-
-            document.getElementById("rating-details").textContent = detailsOutput;
-            document.getElementById("points-after-sprint").textContent = pointsOutput;
+            // Update output
+            document.getElementById("rating-details").value = `Ratings: ${userRatings.map(u => `${u.user}: ${u.rating}`).join(", ")}. Average Rating: ${averageRating}`;
+            document.getElementById("points-after-sprint").value = `Points After Sprint - ${sprintNumber}: ${points[user]}`;
         }
 
         function copyToClipboard(id) {
-            const textArea = document.getElementById(id);
-            textArea.select();
-            document.execCommand('copy');
-            alert('Copied to clipboard!');
+            const text = document.getElementById(id).value;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
         }
     </script>
 </body>
