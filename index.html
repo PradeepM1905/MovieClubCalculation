@@ -171,10 +171,10 @@
                     }
                 });
             }
-
+        
             let detailsOutput = "Details of Rating\n━━━━━━━━━━━━━━\n";
             let pointsOutput = "🏆 Points after 3rd Round Sprint 🏆\n━━━━━━━━━━━━━━\n";
-
+        
             for (const user of Object.keys(points)) {
                 const userRatings = ratings.find(r => r.user === user);
                 if (userRatings) {
@@ -182,14 +182,17 @@
                     const validRatings = otherUsers.map(u => userRatings[u] > 0 ? userRatings[u].toFixed(2) : 'Skipped');
                     const avg = userRatings.average.toFixed(2);
                     const total = (points[user] + parseFloat(avg)).toFixed(2);
-
+        
                     detailsOutput += `👤 ${user}: (${validRatings.join(" + ")}) = ${avg} + Existing (${points[user].toFixed(2)}) = ${total}\n`;
                     pointsOutput += `👤 ${user}: ${total}\n`;
                 } else {
                     pointsOutput += `👤 ${user}: ${points[user].toFixed(2)}\n`;
                 }
             }
-
+        
+            detailsOutput += "━━━━━━━━━━━━━━";
+            pointsOutput += "━━━━━━━━━━━━━━";
+        
             document.getElementById("rating-details").textContent = detailsOutput;
             document.getElementById("points-after-sprint").textContent = pointsOutput;
         }
