@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Club Ratings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        textarea, input, select, button {
+            margin: 10px 0;
+        }
+        .output-box {
+            white-space: pre-wrap;
+            font-family: monospace;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background: #f9f9f9;
+            margin-top: 20px;
+        }
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏆 Movie Club Rating Portal 🏆</h1>
+    <h3>Enter Existing Points:</h3>
+    <textarea id="existing-points" placeholder="Enter existing ratings here..."></textarea>
+
+    <h3>Submit Ratings</h3>
+    <label for="user">Select User:</label>
+    <select id="user">
+        <option value="Ashish">Ashish</option>
+        <option value="Sathyan">Sathyan</option>
+        <option value="Prashanth">Prashanth</option>
+        <option value="Pradeep">Pradeep</option>
+        <option value="Shubh">Shubh</option>
+        <option value="Shirish">Shirish</option>
+    </select>
+
+    <div id="rating-inputs">
+        <p>Enter Ratings:</p>
+        <div id="ratings">
+            <label>Rating by Ashish: <input type="number" step="0.01" id="rating-ashish"></label><br>
+            <label>Rating by Sathyan: <input type="number" step="0.01" id="rating-sathyan"></label><br>
+            <label>Rating by Prashanth: <input type="number" step="0.01" id="rating-prashanth"></label><br>
+            <label>Rating by Pradeep: <input type="number" step="0.01" id="rating-pradeep"></label><br>
+            <label>Rating by Shubh: <input type="number" step="0.01" id="rating-shubh"></label><br>
+            <label>Rating by Shirish: <input type="number" step="0.01" id="rating-shirish"></label>
+        </div>
+        <button onclick="addRating()">Add Rating</button>
+    </div>
+
+    <h3>Calculate Points</h3>
+    <button onclick="calculatePoints()">Calculate</button>
+
+    <div id="output" class="output-box"></div>
+
+    <script>
+        const points = {
+            Ashish: 0,
+            Sathyan: 0,
+            Prashanth: 0,
+            Pradeep: 0,
+            Shubh: 0,
+            Shirish: 0
+        };
+
+        const ratings = [];
+
+        function addRating() {
+            const user = document.getElementById("user").value;
+            const userRatings = {
+                user,
+                ashish: parseFloat(document.getElementById("rating-ashish").value) || 0,
+                sathyan: parseFloat(document.getElementById("rating-sathyan").value) || 0,
+                prashanth: parseFloat(document.getElementById("rating-prashanth").value) || 0,
+                pradeep: parseFloat(document.getElementById("rating-pradeep").value) || 0,
+                shubh: parseFloat(document.getElementById("rating-shubh").value) || 0,
+                shirish: parseFloat(document.getElementById("rating-shirish").value) || 0
+            };
+            ratings.push(userRatings);
+            alert(`${user}'s ratings added successfully!`);
+        }
+
+        function calculatePoints() {
+            const existingPoints = document.getElementById("existing-points").value.trim();
+            if (existingPoints) {
+                existingPoints.split("\n").forEach(line => {
+                    const [name, score] = line.replace(/[👤:]/g, "").split(/\s+/);
+                    if (name in points) points[name] = parseFloat(score) || 0;
+                });
+            }
+
+            ratings.forEach(entry => {
+                const sum = Object.values(entry).slice(1).reduce((a, b) => a + b, 0);
+                const avg = sum / 5;
+                points[entry.user] += avg;
+            });
+
+            let output = "Details of Rating\n━━━━━━━━━━━━━━\n";
+            for (const user of Object.keys(points)) {
+                const userRatings = ratings.find(r => r.user === user);
+                if (userRatings) {
+                    const ratingDetails = Object.values(userRatings).slice(1).join(" + ");
+                    const avg = Object.values(userRatings).slice(1).reduce((a, b) => a + b, 0) / 5;
+                    output += `👤 ${user}: (${ratingDetails}) = ${avg.toFixed(2)}\n`;
+                }
+            }
+
+            output += "\n🏆 Points after 3rd Round Sprint 🏆\n━━━━━━━━━━━━━━\n";
+            for (const [user, score] of Object.entries(points)) {
+                output += `👤 ${user}: ${score.toFixed(2)}\n`;
+            }
+            output += "━━━━━━━━━━━━━━";
+
+            const outputBox = document.getElementById("output");
+            outputBox.textContent = output;
+        }
+    </script>
+</body>
+</html>
