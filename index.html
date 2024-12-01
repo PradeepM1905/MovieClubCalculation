@@ -137,13 +137,19 @@
 
         function calculatePoints() {
             const existingPoints = document.getElementById("existing-points").value.trim();
+        
+            // Parse existing points and update the points object
             if (existingPoints) {
                 existingPoints.split("\n").forEach(line => {
-                    const [name, score] = line.replace(/[👤:]/g, "").split(/\s+/);
-                    if (name in points) points[name] = parseFloat(score) || 0;
+                    const match = line.match(/👤\s+(\w+)\s*:\s*(\d+\.\d+)/);
+                    if (match) {
+                        const name = match[1];
+                        const score = parseFloat(match[2]);
+                        if (name in points) points[name] = score;
+                    }
                 });
             }
-
+        
             const results = {};
             let output = "Details of Rating\n━━━━━━━━━━━━━━\n";
             for (const user of Object.keys(points)) {
@@ -158,13 +164,13 @@
                     results[user] = points[user].toFixed(2); // Keep existing points if no ratings were added
                 }
             }
-
+        
             output += "\n🏆 Points after 3rd Round Sprint 🏆\n━━━━━━━━━━━━━━\n";
             for (const [user, score] of Object.entries(results)) {
                 output += `👤 ${user}: ${score}\n`;
             }
             output += "━━━━━━━━━━━━━━";
-
+        
             const outputBox = document.getElementById("output");
             outputBox.textContent = output;
         }
