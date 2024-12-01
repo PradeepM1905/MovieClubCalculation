@@ -14,10 +14,15 @@
         textarea, input, select, button {
             margin: 10px 0;
             font-family: inherit;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         textarea {
             width: 100%;
-            height: 100px;
+            height: 200px;
+            resize: vertical;
         }
         .rating-input-container {
             display: flex;
@@ -79,12 +84,31 @@
             margin: 0 auto 20px;
             max-width: 100px;
         }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .header h2 {
+            margin-top: 0;
+            font-weight: normal;
+            color: #666;
+        }
     </style>
 </head>
 <body>
-    <img src="logo.png" alt="Movie Club Logo" class="logo">
+    <div class="header">
+        <img src="logo.png" alt="Movie Club Logo" class="logo">
+        <h1>Movie Club</h1>
+        <h2>Rating Portal</h2>
+    </div>
+
     <div class="section">
-        <h1>🏆 Movie Club Rating Portal 🏆</h1>
         <h3>Enter Existing Points:</h3>
         <textarea id="existing-points" placeholder="Enter existing ratings here..."></textarea>
     </div>
