@@ -81,15 +81,19 @@
             margin-bottom: 20px;
         }
         .logo {
-            display: block;
-            margin: 0 auto 10px;
             max-width: 100px;
             border-radius: 50%;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .header {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 20px;
+        }
+        .header-text {
+            margin-left: 20px;
+            text-align: center;
         }
         .header h1 {
             margin: 0;
@@ -108,8 +112,10 @@
 <body>
     <div class="header">
         <img src="logo.png" alt="Movie Club Logo" class="logo">
-        <h1>Movie Club</h1>
-        <h2>Rating Portal</h2>
+        <div class="header-text">
+            <h1>Movie Club</h1>
+            <h2>Rating Portal</h2>
+        </div>
     </div>
 
     <div class="section">
