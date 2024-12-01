@@ -154,10 +154,7 @@
                 });
             }
 
-            ratings.forEach(entry => {
-                points[entry.user] += entry.average;
-            });
-
+            const results = {};
             let output = "Details of Rating\n━━━━━━━━━━━━━━\n";
             for (const user of Object.keys(points)) {
                 const userRatings = ratings.find(r => r.user === user);
@@ -165,13 +162,14 @@
                     const otherUsers = Object.keys(points).filter(u => u !== user);
                     const ratingDetails = otherUsers.map(u => userRatings[u].toFixed(2)).join(" + ");
                     const avg = userRatings.average.toFixed(2);
+                    results[user] = (points[user] + parseFloat(avg)).toFixed(2);
                     output += `👤 ${user}: (${ratingDetails}) = ${avg}\n`;
                 }
             }
 
             output += "\n🏆 Points after 3rd Round Sprint 🏆\n━━━━━━━━━━━━━━\n";
-            for (const [user, score] of Object.entries(points)) {
-                output += `👤 ${user}: ${score.toFixed(2)}\n`;
+            for (const [user, score] of Object.entries(results)) {
+                output += `👤 ${user}: ${score}\n`;
             }
             output += "━━━━━━━━━━━━━━";
 
