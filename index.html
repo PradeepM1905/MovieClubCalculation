@@ -33,6 +33,13 @@
             padding: 8px;
             text-align: center;
         }
+        .output-container {
+            margin-top: 20px;
+        }
+        .copy-button {
+            margin-top: 10px;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -72,7 +79,15 @@
     <h3>Calculate Points</h3>
     <button onclick="calculatePoints()">Calculate</button>
 
-    <div id="output" class="output-box"></div>
+    <div class="output-container">
+        <h3>Details of Rating</h3>
+        <div id="rating-details" class="output-box"></div>
+        <button class="copy-button" onclick="copyToClipboard('rating-details')">Copy Details of Rating</button>
+
+        <h3>Points After Sprint</h3>
+        <div id="points-after-sprint" class="output-box"></div>
+        <button class="copy-button" onclick="copyToClipboard('points-after-sprint')">Copy Points After Sprint</button>
+    </div>
 
     <script>
         const points = {
@@ -110,8 +125,8 @@
                 userRatings[otherUser] = parseFloat(input.value) || 0;
             });
 
-            const sum = otherUsers.reduce((total, u) => total + (userRatings[u] || 0), 0);
-            const avg = sum / otherUsers.length;
+            const validRatings = Object.values(userRatings).filter(r => r > 0);
+            const avg = validRatings.length > 0 ? validRatings.reduce((a, b) => a + b, 0) / validRatings.length : 0;
             userRatings.average = avg;
 
             ratings.push(userRatings);
@@ -123,7 +138,7 @@
             tableBody.innerHTML = '';
             ratings.forEach(entry => {
                 const otherUsers = Object.keys(points).filter(u => u !== entry.user);
-                const ratingDetails = otherUsers.map(u => entry[u].toFixed(2)).join(", ");
+                const ratingDetails = otherUsers.map(u => entry[u] > 0 ? entry[u].toFixed(2) : 'Skipped').join(", ");
                 const row = `
                     <tr>
                         <td>${entry.user}</td>
@@ -137,8 +152,6 @@
 
         function calculatePoints() {
             const existingPoints = document.getElementById("existing-points").value.trim();
-        
-            // Parse existing points and update the points object
             if (existingPoints) {
                 existingPoints.split("\n").forEach(line => {
                     const match = line.match(/👤\s+(\w+)\s*:\s*(\d+\.\d+)/);
@@ -149,30 +162,34 @@
                     }
                 });
             }
-        
-            const results = {};
-            let output = "Details of Rating\n━━━━━━━━━━━━━━\n";
+
+            let detailsOutput = "Details of Rating\n━━━━━━━━━━━━━━\n";
+            let pointsOutput = "🏆 Points after 3rd Round Sprint 🏆\n━━━━━━━━━━━━━━\n";
+
             for (const user of Object.keys(points)) {
                 const userRatings = ratings.find(r => r.user === user);
                 if (userRatings) {
                     const otherUsers = Object.keys(points).filter(u => u !== user);
-                    const ratingDetails = otherUsers.map(u => userRatings[u].toFixed(2)).join(" + ");
+                    const validRatings = otherUsers.map(u => userRatings[u] > 0 ? userRatings[u].toFixed(2) : 'Skipped');
                     const avg = userRatings.average.toFixed(2);
-                    results[user] = (points[user] + parseFloat(avg)).toFixed(2);
-                    output += `👤 ${user}: (${ratingDetails}) = ${avg} + Existing (${points[user].toFixed(2)}) = ${results[user]}\n`;
+                    const total = (points[user] + parseFloat(avg)).toFixed(2);
+
+                    detailsOutput += `👤 ${user}: (${validRatings.join(" + ")}) = ${avg}\n`;
+                    pointsOutput += `👤 ${user}: ${total}\n`;
                 } else {
-                    results[user] = points[user].toFixed(2); // Keep existing points if no ratings were added
+                    pointsOutput += `👤 ${user}: ${points[user].toFixed(2)}\n`;
                 }
             }
-        
-            output += "\n🏆 Points after 3rd Round Sprint 🏆\n━━━━━━━━━━━━━━\n";
-            for (const [user, score] of Object.entries(results)) {
-                output += `👤 ${user}: ${score}\n`;
-            }
-            output += "━━━━━━━━━━━━━━";
-        
-            const outputBox = document.getElementById("output");
-            outputBox.textContent = output;
+
+            document.getElementById("rating-details").textContent = detailsOutput;
+            document.getElementById("points-after-sprint").textContent = pointsOutput;
+        }
+
+        function copyToClipboard(elementId) {
+            const content = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                alert("Copied to clipboard!");
+            });
         }
 
         updateRatingInputs();
