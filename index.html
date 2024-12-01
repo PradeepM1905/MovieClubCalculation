@@ -6,163 +6,182 @@
     <title>Movie Club Ratings</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #f5f5f5, #e0e0e0);
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #2e3b4e;
+            font-size: 2.5rem;
+            margin-top: 2rem;
+        }
+
+        #container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
         }
-        textarea, input, select, button {
-            margin: 10px 0;
+
+        .input-container, .output-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            padding: 20px;
         }
-        textarea {
+
+        .input-container h2, .output-container h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .input-container textarea, .output-container textarea {
             width: 100%;
-            height: 100px;
-        }
-        .rating-input-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .rating-input {
-            flex: 1 1 calc(33.33% - 10px);
-        }
-        .output-box {
-            white-space: pre-wrap;
-            font-family: monospace;
-            border: 1px solid #ccc;
+            height: 150px;
             padding: 10px;
-            background: #f9f9f9;
-            margin-top: 20px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
         }
-        table {
+
+        .input-container input[type="text"], .input-container select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .input-container button, .copy-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .input-container button:hover, .copy-btn:hover {
+            background-color: #45a049;
+        }
+
+        .table-container {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
-        table, th, td {
-            border: 1px solid #ccc;
+
+        .table-container th, .table-container td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
         }
-        th, td {
-            padding: 8px;
-            text-align: center;
+
+        .table-container th {
+            background-color: #4CAF50;
+            color: white;
         }
+
+        .table-container tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .table-container tr:hover {
+            background-color: #ddd;
+        }
+
         .output-container {
-            margin-top: 20px;
+            font-size: 1.2rem;
+            line-height: 1.6;
         }
-        .copy-button {
-            margin-top: 10px;
-            display: block;
+
+        .output-section {
+            margin-bottom: 30px;
+        }
+
+        .horizontal-line {
+            margin: 20px 0;
+            border: 0;
+            border-top: 1px solid #ccc;
         }
     </style>
 </head>
 <body>
-    <h1>🏆 Movie Club Rating Portal 🏆</h1>
-    <h3>Enter Existing Points:</h3>
-    <textarea id="existing-points" placeholder="Enter existing ratings here..."></textarea>
+    <div id="container">
+        <h1>Movie Club Ratings</h1>
 
-    <h3>Submit Ratings</h3>
-    <label for="user">Select User:</label>
-    <select id="user" onchange="updateRatingInputs()">
-        <option value="Ashish">Ashish</option>
-        <option value="Sathyan">Sathyan</option>
-        <option value="Prashanth">Prashanth</option>
-        <option value="Pradeep">Pradeep</option>
-        <option value="Shubh">Shubh</option>
-        <option value="Shirish">Shirish</option>
-    </select>
+        <!-- Input Section -->
+        <div class="input-container">
+            <h2>Enter Existing Points</h2>
+            <textarea id="existing-points" placeholder="Enter existing points with sprint number (e.g., 🏆 Points after Sprint - 3🏆)"></textarea>
+            <button onclick="calculatePoints()">Add Rating</button>
+        </div>
 
-    <div id="rating-inputs" class="rating-input-container"></div>
-    <button onclick="addRating()">Add Rating</button>
+        <!-- Output Section -->
+        <div class="output-container">
+            <div class="output-section">
+                <h2>Details of Rating</h2>
+                <textarea id="rating-details" readonly></textarea>
+                <button class="copy-btn" onclick="copyToClipboard('rating-details')">Copy Details</button>
+            </div>
+            <div class="horizontal-line"></div>
+            <div class="output-section">
+                <h2>Points After Sprint</h2>
+                <textarea id="points-after-sprint" readonly></textarea>
+                <button class="copy-btn" onclick="copyToClipboard('points-after-sprint')">Copy Points</button>
+            </div>
+        </div>
 
-    <h3>Ratings Table</h3>
-    <table id="ratings-table">
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Ratings</th>
-                <th>Average</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <h3>Calculate Points</h3>
-    <button onclick="calculatePoints()">Calculate</button>
-
-    <div class="output-container">
-        <h3>Details of Rating</h3>
-        <div id="rating-details" class="output-box"></div>
-        <button class="copy-button" onclick="copyToClipboard('rating-details')">Copy Details of Rating</button>
-
-        <h3>Points After Sprint</h3>
-        <div id="points-after-sprint" class="output-box"></div>
-        <button class="copy-button" onclick="copyToClipboard('points-after-sprint')">Copy Points After Sprint</button>
+        <!-- Table Section -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody id="rating-table-body">
+                    <!-- Table rows will be added here -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
         const points = {
-            Ashish: 0,
-            Sathyan: 0,
-            Prashanth: 0,
-            Pradeep: 0,
-            Shubh: 0,
-            Shirish: 0
+            "Ashish": 0,
+            "Sathyan": 0,
+            "Prashanth": 0,
+            "Pradeep": 0,
+            "Shubh": 0,
+            "Shirish": 0
         };
 
-        const ratings = [];
-
-        function updateRatingInputs() {
-            const user = document.getElementById("user").value;
-            const ratingContainer = document.getElementById("rating-inputs");
-            const otherUsers = Object.keys(points).filter(u => u !== user);
-            ratingContainer.innerHTML = '';
-            otherUsers.forEach(otherUser => {
-                ratingContainer.innerHTML += `
-                    <div class="rating-input">
-                        <label>Rating by ${otherUser}:</label>
-                        <input type="number" step="0.01" id="rating-${otherUser.toLowerCase()}">
-                    </div>
-                `;
-            });
-        }
-
-        function addRating() {
-            const user = document.getElementById("user").value;
-            const otherUsers = Object.keys(points).filter(u => u !== user);
-            const userRatings = { user };
-
-            otherUsers.forEach(otherUser => {
-                const input = document.getElementById(`rating-${otherUser.toLowerCase()}`);
-                userRatings[otherUser] = parseFloat(input.value) || 0;
-            });
-
-            const validRatings = Object.values(userRatings).filter(r => r > 0);
-            const avg = validRatings.length > 0 ? validRatings.reduce((a, b) => a + b, 0) / validRatings.length : 0;
-            userRatings.average = avg;
-
-            ratings.push(userRatings);
-            updateTable();
-        }
-
-        function updateTable() {
-            const tableBody = document.querySelector("#ratings-table tbody");
-            tableBody.innerHTML = '';
-            ratings.forEach(entry => {
-                const otherUsers = Object.keys(points).filter(u => u !== entry.user);
-                const ratingDetails = otherUsers.map(u => entry[u] > 0 ? entry[u].toFixed(2) : 'Skipped').join(", ");
-                const row = `
-                    <tr>
-                        <td>${entry.user}</td>
-                        <td>${ratingDetails}</td>
-                        <td>${entry.average.toFixed(2)}</td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-        }
+        const ratings = [
+            { user: "Ashish", Pradeep: 0, Sathyan: 0, Prashanth: 0, Shubh: 0, Shirish: 0, average: 0 },
+            { user: "Sathyan", Pradeep: 0, Prashanth: 0, Ashish: 0, Shubh: 0, Shirish: 0, average: 0 },
+            { user: "Prashanth", Pradeep: 0, Sathyan: 0, Ashish: 0, Shubh: 0, Shirish: 0, average: 0 },
+            { user: "Pradeep", Ashish: 0, Sathyan: 0, Prashanth: 0, Shubh: 0, Shirish: 0, average: 0 },
+            { user: "Shubh", Ashish: 0, Sathyan: 0, Prashanth: 0, Pradeep: 0, Shirish: 0, average: 0 },
+            { user: "Shirish", Ashish: 0, Sathyan: 0, Prashanth: 0, Pradeep: 0, Shubh: 0, average: 0 }
+        ];
 
         function calculatePoints() {
             const existingPointsInput = document.getElementById("existing-points").value.trim();
             let sprintNumber = 0;
-        
+
             // Extract sprint number from input
             const sprintMatch = existingPointsInput.match(/🏆 Points after Sprint\s*-\s*(\d+)🏆/);
             if (sprintMatch) {
@@ -171,7 +190,7 @@
                 alert("Invalid input format for existing points. Please include '🏆 Points after Sprint - X 🏆'.");
                 return;
             }
-        
+
             const pointsLines = existingPointsInput.split("\n").slice(1); // Ignore the first line with the sprint number
             pointsLines.forEach(line => {
                 const match = line.match(/👤\s+(\w+)\s*:\s*(\d+\.\d+)/);
@@ -181,10 +200,10 @@
                     if (name in points) points[name] = score;
                 }
             });
-        
+
             let detailsOutput = "Details of Rating\n━━━━━━━━━━━━━━\n";
             let pointsOutput = `🏆 Points after Sprint - ${sprintNumber}🏆\n━━━━━━━━━━━━━━\n`;
-        
+
             for (const user of Object.keys(points)) {
                 const userRatings = ratings.find(r => r.user === user);
                 if (userRatings) {
@@ -192,30 +211,27 @@
                     const validRatings = otherUsers.map(u => userRatings[u] > 0 ? userRatings[u].toFixed(2) : 'Skipped');
                     const avg = userRatings.average.toFixed(2);
                     const total = (points[user] + parseFloat(avg)).toFixed(2);
-        
+
                     detailsOutput += `👤 ${user}: (${validRatings.join(" + ")}) = ${avg} + Existing (${points[user].toFixed(2)}) = ${total}\n`;
                     pointsOutput += `👤 ${user}: ${total}\n`;
                 } else {
                     pointsOutput += `👤 ${user}: ${points[user].toFixed(2)}\n`;
                 }
             }
-        
+
             detailsOutput += "━━━━━━━━━━━━━━";
             pointsOutput += "━━━━━━━━━━━━━━";
-        
+
             document.getElementById("rating-details").textContent = detailsOutput;
             document.getElementById("points-after-sprint").textContent = pointsOutput;
         }
 
-
-        function copyToClipboard(elementId) {
-            const content = document.getElementById(elementId).textContent;
-            navigator.clipboard.writeText(content).then(() => {
-                alert("Copied to clipboard!");
-            });
+        function copyToClipboard(id) {
+            const textArea = document.getElementById(id);
+            textArea.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
         }
-
-        updateRatingInputs();
     </script>
 </body>
 </html>
