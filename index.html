@@ -160,20 +160,30 @@
         }
 
         function calculatePoints() {
-            const existingPoints = document.getElementById("existing-points").value.trim();
-            if (existingPoints) {
-                existingPoints.split("\n").forEach(line => {
-                    const match = line.match(/👤\s+(\w+)\s*:\s*(\d+\.\d+)/);
-                    if (match) {
-                        const name = match[1];
-                        const score = parseFloat(match[2]);
-                        if (name in points) points[name] = score;
-                    }
-                });
+            const existingPointsInput = document.getElementById("existing-points").value.trim();
+            let sprintNumber = 0;
+        
+            // Extract sprint number from input
+            const sprintMatch = existingPointsInput.match(/🏆 Points after Sprint\s*-\s*(\d+)🏆/);
+            if (sprintMatch) {
+                sprintNumber = parseInt(sprintMatch[1], 10) + 1;
+            } else {
+                alert("Invalid input format for existing points. Please include '🏆 Points after Sprint - X 🏆'.");
+                return;
             }
         
+            const pointsLines = existingPointsInput.split("\n").slice(1); // Ignore the first line with the sprint number
+            pointsLines.forEach(line => {
+                const match = line.match(/👤\s+(\w+)\s*:\s*(\d+\.\d+)/);
+                if (match) {
+                    const name = match[1];
+                    const score = parseFloat(match[2]);
+                    if (name in points) points[name] = score;
+                }
+            });
+        
             let detailsOutput = "Details of Rating\n━━━━━━━━━━━━━━\n";
-            let pointsOutput = "🏆 Points after 3rd Round Sprint 🏆\n━━━━━━━━━━━━━━\n";
+            let pointsOutput = `🏆 Points after Sprint - ${sprintNumber}🏆\n━━━━━━━━━━━━━━\n`;
         
             for (const user of Object.keys(points)) {
                 const userRatings = ratings.find(r => r.user === user);
@@ -196,6 +206,7 @@
             document.getElementById("rating-details").textContent = detailsOutput;
             document.getElementById("points-after-sprint").textContent = pointsOutput;
         }
+
 
         function copyToClipboard(elementId) {
             const content = document.getElementById(elementId).textContent;
