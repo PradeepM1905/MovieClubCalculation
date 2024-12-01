@@ -11,7 +11,18 @@
         }
         textarea, input, select, button {
             margin: 10px 0;
-            display: block;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+        }
+        .rating-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .rating-input {
+            flex: 1 1 calc(33.33% - 10px);
         }
         .output-box {
             white-space: pre-wrap;
@@ -58,11 +69,8 @@
         <option value="Shirish">Shirish</option>
     </select>
 
-    <div id="rating-inputs">
-        <p>Enter Ratings:</p>
-        <div id="ratings"></div>
-        <button onclick="addRating()">Add Rating</button>
-    </div>
+    <div id="rating-inputs" class="rating-input-container"></div>
+    <button onclick="addRating()">Add Rating</button>
 
     <h3>Ratings Table</h3>
     <table id="ratings-table">
@@ -103,14 +111,15 @@
 
         function updateRatingInputs() {
             const user = document.getElementById("user").value;
-            const ratingContainer = document.getElementById("ratings");
+            const ratingContainer = document.getElementById("rating-inputs");
             const otherUsers = Object.keys(points).filter(u => u !== user);
             ratingContainer.innerHTML = '';
             otherUsers.forEach(otherUser => {
                 ratingContainer.innerHTML += `
-                    <label>Rating by ${otherUser}: 
+                    <div class="rating-input">
+                        <label>Rating by ${otherUser}:</label>
                         <input type="number" step="0.01" id="rating-${otherUser.toLowerCase()}">
-                    </label><br>
+                    </div>
                 `;
             });
         }
@@ -174,7 +183,7 @@
                     const avg = userRatings.average.toFixed(2);
                     const total = (points[user] + parseFloat(avg)).toFixed(2);
 
-                    detailsOutput += `👤 ${user}: (${validRatings.join(" + ")}) = ${avg}\n`;
+                    detailsOutput += `👤 ${user}: (${validRatings.join(" + ")}) = ${avg} + Existing (${points[user].toFixed(2)}) = ${total}\n`;
                     pointsOutput += `👤 ${user}: ${total}\n`;
                 } else {
                     pointsOutput += `👤 ${user}: ${points[user].toFixed(2)}\n`;
