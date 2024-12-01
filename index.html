@@ -6,11 +6,14 @@
     <title>Movie Club Ratings</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
+            background-color: #f0f0f0;
+            color: #333;
         }
         textarea, input, select, button {
             margin: 10px 0;
+            font-family: inherit;
         }
         textarea {
             width: 100%;
@@ -47,54 +50,88 @@
         .output-container {
             margin-top: 20px;
         }
-        .copy-button {
+        .copy-button, button {
             margin-top: 10px;
             display: block;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .copy-button:hover, button:hover {
+            background-color: #45a049;
+        }
+        .section {
+            background-color: #e0e0e0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            max-width: 100px;
         }
     </style>
 </head>
 <body>
-    <h1>🏆 Movie Club Rating Portal 🏆</h1>
-    <h3>Enter Existing Points:</h3>
-    <textarea id="existing-points" placeholder="Enter existing ratings here..."></textarea>
+    <img src="logo.png" alt="Movie Club Logo" class="logo">
+    <div class="section">
+        <h1>🏆 Movie Club Rating Portal 🏆</h1>
+        <h3>Enter Existing Points:</h3>
+        <textarea id="existing-points" placeholder="Enter existing ratings here..."></textarea>
+    </div>
 
-    <h3>Submit Ratings</h3>
-    <label for="user">Select User:</label>
-    <select id="user" onchange="updateRatingInputs()">
-        <option value="Ashish">Ashish</option>
-        <option value="Sathyan">Sathyan</option>
-        <option value="Prashanth">Prashanth</option>
-        <option value="Pradeep">Pradeep</option>
-        <option value="Shubh">Shubh</option>
-        <option value="Shirish">Shirish</option>
-    </select>
+    <div class="section">
+        <h3>Submit Ratings</h3>
+        <label for="user">Select User:</label>
+        <select id="user" onchange="updateRatingInputs()">
+            <option value="Ashish">Ashish</option>
+            <option value="Sathyan">Sathyan</option>
+            <option value="Prashanth">Prashanth</option>
+            <option value="Pradeep">Pradeep</option>
+            <option value="Shubh">Shubh</option>
+            <option value="Shirish">Shirish</option>
+        </select>
 
-    <div id="rating-inputs" class="rating-input-container"></div>
-    <button onclick="addRating()">Add Rating</button>
+        <div id="rating-inputs" class="rating-input-container"></div>
+        <button onclick="addRating()">Add Rating</button>
+    </div>
 
-    <h3>Ratings Table</h3>
-    <table id="ratings-table">
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Ratings</th>
-                <th>Average</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <div class="section">
+        <h3>Ratings Table</h3>
+        <table id="ratings-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Ratings</th>
+                    <th>Average</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
-    <h3>Calculate Points</h3>
-    <button onclick="calculatePoints()">Calculate</button>
+    <div class="section">
+        <h3>Calculate Points</h3>
+        <button onclick="calculatePoints()">Calculate</button>
 
-    <div class="output-container">
-        <h3>Details of Rating</h3>
-        <div id="rating-details" class="output-box"></div>
-        <button class="copy-button" onclick="copyToClipboard('rating-details')">Copy Details of Rating</button>
+        <div class="output-container">
+            <h3>Details of Rating</h3>
+            <div id="rating-details" class="output-box"></div>
+            <button class="copy-button" onclick="copyToClipboard('rating-details')">Copy Details of Rating</button>
 
-        <h3>Points After Sprint</h3>
-        <div id="points-after-sprint" class="output-box"></div>
-        <button class="copy-button" onclick="copyToClipboard('points-after-sprint')">Copy Points After Sprint</button>
+            <h3>Points After Sprint</h3>
+            <div id="points-after-sprint" class="output-box"></div>
+            <button class="copy-button" onclick="copyToClipboard('points-after-sprint')">Copy Points After Sprint</button>
+        </div>
     </div>
 
     <script>
@@ -206,7 +243,6 @@
             document.getElementById("rating-details").textContent = detailsOutput;
             document.getElementById("points-after-sprint").textContent = pointsOutput;
         }
-
 
         function copyToClipboard(elementId) {
             const content = document.getElementById(elementId).textContent;
